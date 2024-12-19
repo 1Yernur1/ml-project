@@ -110,9 +110,12 @@ export const UserInfoForm = () => {
 	if (mutation.isSuccess) {
 		return (
 			<div className="min-h-screen grid place-items-center">
-				<p>
-					Вероятность заболевания: <span className="font-bold">{mutation.data.disease_probability}</span>
-				</p>
+				<div className="text-center">
+					<p>
+						Вероятность заболевания: <span className="font-bold">{mutation.data.disease_probability}</span>
+					</p>
+					<p>{mutation.data.recommendation}</p>
+				</div>
 			</div>
 		);
 	}
