@@ -1,3 +1,5 @@
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -5,7 +7,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { useMutation } from "@tanstack/react-query";
 
 type FormDataType = z.infer<typeof FormSchema>;
 
@@ -56,6 +57,7 @@ const FormSchema = z.object({
 });
 
 export const UserInfoForm = () => {
+	const navigate = useNavigate();
 	const form = useForm<FormDataType>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {},
@@ -74,7 +76,7 @@ export const UserInfoForm = () => {
 		},
 
 		onSuccess: (data) => {
-			console.log("data", data);
+			navigate("/success", { state: { mutationData: data } });
 		},
 	});
 
@@ -103,19 +105,6 @@ export const UserInfoForm = () => {
 		return (
 			<div className="min-h-screen grid place-items-center">
 				<p className="text-red-500">Произошла ошибка</p>
-			</div>
-		);
-	}
-
-	if (mutation.isSuccess) {
-		return (
-			<div className="min-h-screen grid place-items-center">
-				<div className="text-center">
-					<p>
-						Вероятность заболевания: <span className="font-bold">{mutation.data.disease_probability}</span>
-					</p>
-					<p>{mutation.data.recommendation}</p>
-				</div>
 			</div>
 		);
 	}
