@@ -5,6 +5,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { useMutation } from "@tanstack/react-query";
 
 type FormDataType = z.infer<typeof FormSchema>;
 
@@ -37,10 +38,10 @@ const FormSchema = z.object({
 	gender: z.enum(["1", "2"], {
 		errorMap: () => ({ message: "Выберите пол" }),
 	}),
-	cholesterol: z.enum(["1", "2"], {
+	cholesterol: z.enum(["1", "2", "3"], {
 		errorMap: () => ({ message: "Выберите уровень холестерина" }),
 	}),
-	gluc: z.enum(["1", "2"], {
+	gluc: z.enum(["1", "2", "3"], {
 		errorMap: () => ({ message: "Выберите уровень глюкозы" }),
 	}),
 	smoke: z.enum(["0", "1"], {
@@ -60,8 +61,60 @@ export const UserInfoForm = () => {
 		defaultValues: {},
 	});
 
-	function onSubmit(data: FormDataType) {
-		console.log(data);
+	const mutation = useMutation({
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		mutationFn: async (data: any) => {
+			return await fetch("https://mlbackend-k5ao.onrender.com/api/predict/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			}).then((res) => res.json());
+		},
+
+		onSuccess: (data) => {
+			console.log("data", data);
+		},
+	});
+
+	const onSubmit = (data: FormDataType) => {
+		const formattedBody = {
+			...data,
+			gender: +data.gender,
+			cholesterol: +data.cholesterol,
+			gluc: +data.gluc,
+			smoke: +data.smoke,
+			alco: +data.alco,
+			active: +data.active,
+		};
+		mutation.mutate(formattedBody);
+	};
+
+	if (mutation.isPending) {
+		return (
+			<div className="min-h-screen grid place-items-center">
+				<div className="animate-spin rounded-full h-16 w-16 border-t-4 border-slate-500 border-solid"></div>
+			</div>
+		);
+	}
+
+	if (mutation.isError) {
+		return (
+			<div className="min-h-screen grid place-items-center">
+				<p className="text-red-500">Произошла ошибка</p>
+			</div>
+		);
+	}
+
+	if (mutation.isSuccess) {
+		return (
+			<div className="min-h-screen grid place-items-center">
+				<p>
+					Вероятность заболевания: <span className="font-bold">{mutation.data.disease_probability}</span>
+				</p>
+			</div>
+		);
 	}
 
 	return (
@@ -179,8 +232,8 @@ export const UserInfoForm = () => {
 										</FormControl>
 
 										<SelectContent>
-											<SelectItem value="1">Мужской</SelectItem>
-											<SelectItem value="2">Женский</SelectItem>
+											<SelectItem value="2">Мужской</SelectItem>
+											<SelectItem value="1">Женский</SelectItem>
 										</SelectContent>
 									</Select>
 									<FormMessage />
@@ -205,6 +258,7 @@ export const UserInfoForm = () => {
 										<SelectContent>
 											<SelectItem value="1">Нормальный</SelectItem>
 											<SelectItem value="2">Выше нормы</SelectItem>
+											<SelectItem value="3">Значительно выше нормы</SelectItem>
 										</SelectContent>
 									</Select>
 									<FormMessage />
@@ -229,6 +283,7 @@ export const UserInfoForm = () => {
 										<SelectContent>
 											<SelectItem value="1">Нормальный</SelectItem>
 											<SelectItem value="2">Выше нормы</SelectItem>
+											<SelectItem value="3">Значительно выше нормы</SelectItem>
 										</SelectContent>
 									</Select>
 									<FormMessage />
