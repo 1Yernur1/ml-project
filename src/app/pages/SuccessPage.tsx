@@ -2,7 +2,6 @@ import { useLocation } from "react-router";
 
 export const SuccessPage = () => {
 	const location = useLocation();
-	console.log("location", location);
 	const { mutationData } = location.state || {};
 
 	if (!mutationData) {
