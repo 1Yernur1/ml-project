@@ -110,9 +110,10 @@ export const UserInfoForm = () => {
 	}
 
 	return (
-		<div className="min-h-screen container grid place-items-center">
+		<div className="container mx-auto grid p-4 gap-4">
+			<h1 className="text-3xl font-bold text-center">Вычислить вероятность заболевания</h1>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-96">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-96 justify-self-center">
 					<div className="grid grid-cols-2 gap-4">
 						<FormField
 							control={form.control}
