@@ -120,7 +120,7 @@ export const UserInfoForm = () => {
 	return (
 		<div className="min-h-screen container grid place-items-center">
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-96">
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-96">
 					<div className="grid grid-cols-2 gap-4">
 						<FormField
 							control={form.control}
